@@ -188,6 +188,8 @@ extern "C" {
 #endif
 
 #define OPENSSL_IS_AWSLC
+// TODO: add build flag to enable OPENSSL_IS_BORINGSSL by default.
+#define OPENSSL_IS_BORINGSSL
 #define OPENSSL_VERSION_NUMBER 0x1010107f
 #define SSLEAY_VERSION_NUMBER OPENSSL_VERSION_NUMBER
 
