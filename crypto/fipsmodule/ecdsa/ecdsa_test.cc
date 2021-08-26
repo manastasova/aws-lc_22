@@ -187,10 +187,12 @@ TEST(ECDSATest, BuiltinCurves) {
     int nid;
     const char *name;
   } kCurves[] = {
+      { NID_X9_62_prime192v1, "secp192r1" },
       { NID_secp224r1, "secp224r1" },
       { NID_X9_62_prime256v1, "secp256r1" },
       { NID_secp384r1, "secp384r1" },
       { NID_secp521r1, "secp521r1" },
+      { NID_secp256k1, "secp256k1" },
       { NID_secp160r1, "secp160r1" },
   };
 
@@ -292,7 +294,7 @@ static size_t BitsToBytes(size_t bits) {
 }
 
 TEST(ECDSATest, MaxSigLen) {
-  static const size_t kBits[] = {224, 256, 384, 521, 10000};
+  static const size_t kBits[] = {192, 224, 256, 384, 521, 10000};
   for (size_t bits : kBits) {
     SCOPED_TRACE(bits);
     size_t order_len = BitsToBytes(bits);
@@ -319,6 +321,10 @@ static bssl::UniquePtr<EC_GROUP> GetCurve(FileTest *t, const char *key) {
     return nullptr;
   }
 
+  if (curve_name == "P-192") {
+    return bssl::UniquePtr<EC_GROUP>(
+        EC_GROUP_new_by_curve_name(NID_X9_62_prime192v1));
+  }
   if (curve_name == "P-224") {
     return bssl::UniquePtr<EC_GROUP>(EC_GROUP_new_by_curve_name(NID_secp224r1));
   }
@@ -334,6 +340,9 @@ static bssl::UniquePtr<EC_GROUP> GetCurve(FileTest *t, const char *key) {
   }
   if (curve_name == "secp160r1") {
     return NewSecp160r1Group();
+  }
+  if (curve_name == "secp256k1") {
+    return bssl::UniquePtr<EC_GROUP>(EC_GROUP_new_by_curve_name(NID_secp256k1));
   }
 
   ADD_FAILURE() << "Unknown curve: " << curve_name;
