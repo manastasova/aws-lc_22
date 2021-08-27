@@ -24,3 +24,37 @@ file(GLOB PQ_SRC "*.c" "sike_r3/*.c")
 
 # compile
 add_library(pq_lib ${PQ_HEADERS} ${PQ_SRC})
+
+
+
+# Doesn't work bc of following...
+# Practice using GoogleTest try 2
+if(BUILD_TESTING)
+    #add_subdirectory(test)
+
+    add_executable(
+        hello_test
+
+        hello_test.cc
+        $<TARGET_OBJECTS:boringssl_gtest_main>
+    )
+    target_link_libraries(hello_test test_support_lib boringssl_gtest)
+endif()
+
+include(GoogleTest)
+gtest_discover_tests(hello_test)
+
+# Practice using GoogleTest try 1
+#enable_testing()
+
+#add_executable(
+        #hello_test
+        #hello_test.cc
+#)
+#target_link_libraries(
+        #hello_test
+        #gtest_main
+#)
+
+#include(GoogleTest)
+#gtest_discover_tests(hello_test)
