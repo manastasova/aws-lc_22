@@ -832,6 +832,7 @@ if(BUILD_TESTING)
       add_custom_target(
           run_minimal_tests
           COMMAND crypto_test
+          COMMAND hello_test
           COMMAND urandom_test
           COMMAND ssl_test
           COMMAND decrepit_test
@@ -842,6 +843,7 @@ if(BUILD_TESTING)
       add_custom_command(
           run_minimal_tests
           COMMAND crypto_test
+          COMMAND hello_test
           COMMAND urandom_test
           COMMAND decrepit_test
           WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
