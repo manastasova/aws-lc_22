@@ -38,38 +38,23 @@ if(BUILD_TESTING)
         hello_test.cc
         $<TARGET_OBJECTS:boringssl_gtest_main>
     )
+    add_dependencies(hello_test global_target)
     target_link_libraries(hello_test test_support_lib boringssl_gtest pq-crypto)
 endif()
 
 include(GoogleTest)
 gtest_discover_tests(hello_test)
 
-install(TARGETS hello_test
+install(TARGETS pq-crypto
+        EXPORT pq-crypto-targets
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
-configure_file("cmake/hello_test-config.cmake"
-        "${CMAKE_CURRENT_BINARY_DIR}/hello_test-config.cmake"
+configure_file("cmake/pq-crypto-config.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/pq-crypto-config.cmake"
         @ONLY)
 
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/hello_test-config.cmake"
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}/hello_test/cmake"
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/pq-crypto-config.cmake"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/pq-crypto/cmake"
         COMPONENT Development)
-
-
-
-# Practice using GoogleTest try 1
-#enable_testing()
-
-#add_executable(
-        #hello_test
-        #hello_test.cc
-#)
-#target_link_libraries(
-        #hello_test
-        #gtest_main
-#)
-
-#include(GoogleTest)
-#gtest_discover_tests(hello_test)
