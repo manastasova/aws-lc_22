@@ -23,14 +23,10 @@ file(GLOB PQ_HEADERS "*.h" "sike_r3/*.h")
 file(GLOB PQ_SRC "*.c" "sike_r3/*.c")
 
 # compile
-add_library(pq_lib ${PQ_HEADERS} ${PQ_SRC})
+add_library(pq-crypto ${PQ_HEADERS} ${PQ_SRC})
 
-
-
-# Doesn't work bc of following...
-# Practice using GoogleTest try 2
+# add tests
 if(BUILD_TESTING)
-    #add_subdirectory(test)
 
     add_executable(
         hello_test
@@ -39,7 +35,9 @@ if(BUILD_TESTING)
         $<TARGET_OBJECTS:boringssl_gtest_main>
     )
     add_dependencies(hello_test global_target)
-    target_link_libraries(hello_test test_support_lib boringssl_gtest pq-crypto)
+
+    target_link_libraries(hello_test test_support_lib boringssl_gtest pq-crypto crypto)
+    add_dependencies(all_tests hello_test)
 endif()
 
 include(GoogleTest)
@@ -57,4 +55,8 @@ configure_file("cmake/pq-crypto-config.cmake"
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/pq-crypto-config.cmake"
         DESTINATION "${CMAKE_INSTALL_LIBDIR}/pq-crypto/cmake"
+        COMPONENT Development)
+
+install(EXPORT pq-crypto-targets
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/crypto/cmake/${TARGET_DIR}"
         COMPONENT Development)
