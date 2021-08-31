@@ -38,11 +38,26 @@ if(BUILD_TESTING)
         hello_test.cc
         $<TARGET_OBJECTS:boringssl_gtest_main>
     )
-    target_link_libraries(hello_test test_support_lib boringssl_gtest)
+    target_link_libraries(hello_test test_support_lib boringssl_gtest pq-crypto)
 endif()
 
 include(GoogleTest)
 gtest_discover_tests(hello_test)
+
+install(TARGETS hello_test
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+
+configure_file("cmake/hello_test-config.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/hello_test-config.cmake"
+        @ONLY)
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/hello_test-config.cmake"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/hello_test/cmake"
+        COMPONENT Development)
+
+
 
 # Practice using GoogleTest try 1
 #enable_testing()
