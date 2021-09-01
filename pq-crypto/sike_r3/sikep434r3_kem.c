@@ -29,7 +29,7 @@ int constant_time_copy_or_dont(uint8_t * dest, const uint8_t * src, uint32_t len
 int sike_p434_r3_crypto_kem_keypair(unsigned char *pk, unsigned char *sk)
 {
     // Generate lower portion of secret key sk <- s||SK
-    (RAND_bytes(sk, SIKE_P434_R3_MSG_BYTES);
+    RAND_bytes(sk, SIKE_P434_R3_MSG_BYTES);
     random_mod_order_B(sk + SIKE_P434_R3_MSG_BYTES);
 
     // Generate public key pk
