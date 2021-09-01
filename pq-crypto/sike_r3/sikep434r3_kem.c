@@ -53,7 +53,7 @@ int sike_p434_r3_crypto_kem_enc(unsigned char *ct, unsigned char *ss, const unsi
     unsigned char temp[SIKE_P434_R3_CIPHERTEXT_BYTES+SIKE_P434_R3_MSG_BYTES];
 
     // Generate ephemeralsk <- G(m||pk) mod oA
-    (RAND_bytes(temp, SIKE_P434_R3_MSG_BYTES);
+    RAND_bytes(temp, SIKE_P434_R3_MSG_BYTES);
     memcpy(&temp[SIKE_P434_R3_MSG_BYTES], pk, SIKE_P434_R3_PUBLIC_KEY_BYTES);
     shake256(ephemeralsk, SIKE_P434_R3_SECRETKEY_A_BYTES, temp, SIKE_P434_R3_PUBLIC_KEY_BYTES+SIKE_P434_R3_MSG_BYTES);
     ephemeralsk[SIKE_P434_R3_SECRETKEY_A_BYTES - 1] &= SIKE_P434_R3_MASK_ALICE;
