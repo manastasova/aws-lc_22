@@ -51,10 +51,10 @@ typedef struct pq_kem {
 // -----------------------------------------------------------------------------
 typedef struct pq_kem_params {
     pq_kem *kem;
-    unsigned char *public_key;
-    unsigned char *private_key;
-    unsigned char *ciphertext;
-    unsigned char *shared_secret;
+    uint16_t *public_key;
+    uint16_t *private_key;
+    uint16_t *ciphertext;
+    uint16_t *shared_secret;
 } pq_kem_params;
 
 extern const struct pq_kem evp_sike_p434_r3;
@@ -72,7 +72,7 @@ extern const struct pq_kem evp_sike_p434_r3;
 //
 // Return 1 on success, and 0 if it fails.
 // -----------------------------------------------------------------------------
-int pq_kem_params_alloc(pq_kem *kem, pq_kem_params *kem_params);
+int pq_kem_params_alloc(pq_kem kem, pq_kem_params *kem_params);
 
 // -----------------------------------------------------------------------------
 // Name: pq_kem_params_free

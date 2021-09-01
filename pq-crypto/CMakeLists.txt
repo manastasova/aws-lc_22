@@ -29,19 +29,22 @@ add_library(pq-crypto ${PQ_HEADERS} ${PQ_SRC})
 if(BUILD_TESTING)
 
     add_executable(
-        hello_test
+        pq-crypto-test
 
         hello_test.cc
+        pq_crypto_test.cc
+
+
         $<TARGET_OBJECTS:boringssl_gtest_main>
     )
-    add_dependencies(hello_test global_target)
+    add_dependencies(pq-crypto-test global_target)
 
-    target_link_libraries(hello_test test_support_lib boringssl_gtest pq-crypto crypto)
-    add_dependencies(all_tests hello_test)
+    target_link_libraries(pq-crypto-test test_support_lib boringssl_gtest pq-crypto crypto)
+    add_dependencies(all_tests pq-crypto-test)
 endif()
 
 include(GoogleTest)
-gtest_discover_tests(hello_test)
+gtest_discover_tests(pq-crypto-test)
 
 install(TARGETS pq-crypto
         EXPORT pq-crypto-targets
