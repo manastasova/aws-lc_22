@@ -12,6 +12,10 @@
 #include <stdint.h>
 #include "sike_r3/sike_internal.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 // -----------------------------------------------------------------------------
 // Name: pq_kem
 //
@@ -141,5 +145,10 @@ int EVP_kem_encapsulate(pq_kem_params *kem_params);
 // return 0 otherwise and on error
 // -----------------------------------------------------------------------------
 int EVP_kem_decapsulate(pq_kem_params *kem_params);
+
+#if defined(__cplusplus)
+}  // extern C
+#endif
+
 
 #endif  // AWSLC_EVP_KEM_H

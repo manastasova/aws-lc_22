@@ -19,21 +19,27 @@ include_directories(../include)
 include_directories(../crypto)
 
 # get all header and source files
-file(GLOB PQ_HEADERS "*.h" "sike_r3/*.h")
+#file(GLOB PQ_HEADERS "*.h" "sike_r3/*.h")
 file(GLOB PQ_SRC "*.c" "sike_r3/*.c")
 
 # compile
-add_library(pq-crypto ${PQ_HEADERS} ${PQ_SRC})
+#add_library(pq-crypto ${PQ_HEADERS} ${PQ_SRC}) // bc I think cmake doesn't need the headers
+add_library(pq-crypto ${PQ_SRC})
+
+add_dependencies(pq-crypto global_target)
+target_link_libraries(pq-crypto crypto)
+
+target_include_directories(pq-crypto SYSTEM PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
+        $<INSTALL_INTERFACE:include>)
 
 # add tests
 if(BUILD_TESTING)
-
     add_executable(
         pq-crypto-test
 
         hello_test.cc
         pq_crypto_test.cc
-
 
         $<TARGET_OBJECTS:boringssl_gtest_main>
     )
@@ -60,6 +66,12 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/pq-crypto-config.cmake"
         DESTINATION "${CMAKE_INSTALL_LIBDIR}/pq-crypto/cmake"
         COMPONENT Development)
 
+if (BUILD_SHARED_LIBS)
+    set (TARGET_DIR "shared")
+else()
+    set (TARGET_DIR "static")
+endif()
+
 install(EXPORT pq-crypto-targets
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}/crypto/cmake/${TARGET_DIR}"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/pq-crypto/cmake/${TARGET_DIR}"
         COMPONENT Development)

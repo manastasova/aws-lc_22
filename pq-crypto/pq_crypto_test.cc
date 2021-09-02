@@ -6,13 +6,14 @@
 #include <gtest/gtest.h>
 #include "EVP_kem.h"
 #include "sike_r3/sike_internal.h"
+#include "../include/openssl/mem.h"
 
 
 TEST(Kem_test, Basic) {
 
     // Initialize sike kem and kem_params
     const pq_kem kem = evp_sike_p434_r3;
-    pq_kem_params *kem_params = NULL;
+    pq_kem_params *kem_params = (pq_kem_params*)OPENSSL_malloc(sizeof(pq_kem_params));
 
     // check allocation successful
     ASSERT_TRUE(pq_kem_params_alloc(kem, kem_params));
@@ -38,5 +39,6 @@ TEST(Kem_test, Basic) {
 
     // Clean up
     EXPECT_TRUE(pq_kem_params_free(kem_params));
+    OPENSSL_free(kem_params); //is this needed?
 
 }

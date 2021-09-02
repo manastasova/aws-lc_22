@@ -1,3 +1,7 @@
+include(CMakeFindDependencyMacro)
+
+find_dependency(crypto)
+
 if(WIN32 OR UNIX OR APPLE)
     find_package(Threads REQUIRED)
 endif()
