@@ -54,11 +54,11 @@ typedef struct pq_kem {
 // to the algorithm specific pq_kem struct
 // -----------------------------------------------------------------------------
 typedef struct pq_kem_params {
-    pq_kem *kem;
-    uint16_t *public_key;
-    uint16_t *private_key;
-    uint16_t *ciphertext;
-    uint16_t *shared_secret;
+    const struct pq_kem *kem;
+    unsigned char *public_key;
+    unsigned char *private_key;
+    unsigned char *ciphertext;
+    unsigned char *shared_secret;
 } pq_kem_params;
 
 extern const struct pq_kem evp_sike_p434_r3;
@@ -76,7 +76,7 @@ extern const struct pq_kem evp_sike_p434_r3;
 //
 // Return 1 on success, and 0 if it fails.
 // -----------------------------------------------------------------------------
-int pq_kem_params_alloc(pq_kem kem, pq_kem_params *kem_params);
+int pq_kem_params_alloc(const struct pq_kem *kem, struct pq_kem_params *kem_params);
 
 // -----------------------------------------------------------------------------
 // Name: pq_kem_params_free
@@ -91,7 +91,7 @@ int pq_kem_params_alloc(pq_kem kem, pq_kem_params *kem_params);
 //
 // Return 1 on success, and 0 if it fails
 // -----------------------------------------------------------------------------
-int pq_kem_params_free(pq_kem_params *kem_params);
+int pq_kem_params_free(struct pq_kem_params *kem_params);
 
 // -----------------------------------------------------------------------------
 // Name: EVP_kem_generate_keypair
@@ -108,7 +108,7 @@ int pq_kem_params_free(pq_kem_params *kem_params);
 // Returns 1 on successfully generating key pair,
 // returns 0 otherwise and on error
 // -----------------------------------------------------------------------------
-int EVP_kem_generate_keypair(pq_kem_params *kem_params);
+int EVP_kem_generate_keypair(struct pq_kem_params *kem_params);
 
 // -----------------------------------------------------------------------------
 // Name: EVP_kem_enc
@@ -126,7 +126,7 @@ int EVP_kem_generate_keypair(pq_kem_params *kem_params);
 // Returns 1 on successful encapsulation,
 // return 0 otherwise and on error
 // -----------------------------------------------------------------------------
-int EVP_kem_encapsulate(pq_kem_params *kem_params);
+int EVP_kem_encapsulate(struct pq_kem_params *kem_params);
 
 // -----------------------------------------------------------------------------
 // Name: EVP_kem_dec
@@ -144,7 +144,7 @@ int EVP_kem_encapsulate(pq_kem_params *kem_params);
 // Returns 1 on successful decapsulation,
 // return 0 otherwise and on error
 // -----------------------------------------------------------------------------
-int EVP_kem_decapsulate(pq_kem_params *kem_params);
+int EVP_kem_decapsulate(struct pq_kem_params *kem_params);
 
 #if defined(__cplusplus)
 }  // extern C

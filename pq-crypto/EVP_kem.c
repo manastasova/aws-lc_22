@@ -23,8 +23,8 @@ const struct pq_kem evp_sike_p434_r3 = {
         .decapsulate = &sike_p434_r3_crypto_kem_dec,
 };
 
-int pq_kem_params_alloc(pq_kem kem, pq_kem_params *kem_params) {
-    kem_params->kem = &kem;
+int pq_kem_params_alloc(const struct pq_kem *kem, struct pq_kem_params *kem_params) {
+    kem_params->kem = kem; //kem_params->kem = &kem;
     kem_params->public_key = OPENSSL_malloc(kem_params->kem->public_key_length);
     if (kem_params->public_key == NULL) {
         pq_kem_params_free(kem_params);
@@ -49,7 +49,7 @@ int pq_kem_params_alloc(pq_kem kem, pq_kem_params *kem_params) {
     return 1;
 }
 
-int pq_kem_params_free(pq_kem_params *kem_params) {
+int pq_kem_params_free(struct pq_kem_params *kem_params) {
     if (kem_params != NULL) {
         OPENSSL_free(kem_params->public_key);
         OPENSSL_free(kem_params->private_key);
@@ -60,46 +60,44 @@ int pq_kem_params_free(pq_kem_params *kem_params) {
     return 1;
 }
 
-int EVP_kem_generate_keypair(pq_kem_params *kem_params) {
+int EVP_kem_generate_keypair(struct pq_kem_params *kem_params) {
 
     if (kem_params == NULL || kem_params->kem == NULL) {
         return 0;
     }
-    pq_kem *kem = kem_params->kem;
+    const struct pq_kem *kem = kem_params->kem;
     if (kem->generate_keypair == NULL ||
         kem_params->public_key == NULL ||
         kem_params->private_key == NULL) {
         return 0;
     }
-    return kem->generate_keypair((unsigned char*) kem_params->public_key, (unsigned char*) kem_params->private_key);
+    return kem->generate_keypair(kem_params->public_key, kem_params->private_key);
 }
 
-int EVP_kem_encapsulate(pq_kem_params *kem_params) {
+int EVP_kem_encapsulate(struct pq_kem_params *kem_params) {
 
     if (kem_params == NULL || kem_params->kem == NULL) {
         return 0;
     }
-    pq_kem *kem = kem_params->kem;
+    const struct pq_kem *kem = kem_params->kem;
     if (kem->encapsulate == NULL ||
         kem_params->public_key == NULL ||
         kem_params->ciphertext == NULL) {
         return 0;
     }
-    return kem->encapsulate((unsigned char*) kem_params->ciphertext,
-                            (unsigned char*) kem_params->shared_secret, (unsigned char*) kem_params->public_key);
+    return kem->encapsulate(kem_params->ciphertext, kem_params->shared_secret, kem_params->public_key);
 }
 
-int EVP_kem_decapsulate(pq_kem_params *kem_params) {
+int EVP_kem_decapsulate(struct pq_kem_params *kem_params) {
 
     if (kem_params == NULL || kem_params->kem == NULL) {
         return 0;
     }
-    pq_kem *kem = kem_params->kem;
+    const struct pq_kem *kem = kem_params->kem;
     if (kem->decapsulate == NULL ||
         kem_params->private_key == NULL ||
         kem_params->ciphertext == NULL) {
         return 0;
     }
-    return kem->decapsulate((unsigned char*) kem_params->shared_secret,
-                            (unsigned char*) kem_params->ciphertext, (unsigned char*) kem_params->private_key);
+    return kem->decapsulate(kem_params->shared_secret, kem_params->ciphertext, kem_params->private_key);
 }
