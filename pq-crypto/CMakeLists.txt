@@ -38,8 +38,7 @@ if(BUILD_TESTING)
     add_executable(
         pq-crypto-test
 
-        hello_test.cc
-        pq_crypto_test.cc
+            pq_crypto_test.cc
 
         $<TARGET_OBJECTS:boringssl_gtest_main>
     )
