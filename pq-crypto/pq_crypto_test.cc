@@ -147,6 +147,7 @@ TEST(Kem_test, Basic_Compare_Bytes) {
     EXPECT_TRUE(kem->generate_keypair(kem_params->public_key, kem_params->private_key));
     EXPECT_TRUE(kem->encapsulate(kem_params->ciphertext, client_shared_secret, kem_params->public_key));
     EXPECT_TRUE(kem->decapsulate(server_shared_secret, kem_params->ciphertext, kem_params->private_key));
+
     EXPECT_EQ(Bytes((const char*) server_shared_secret), Bytes((const char*) client_shared_secret));
     //EXPECT_THAT(server_shared_secret, client_shared_secret);
 
