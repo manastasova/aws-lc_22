@@ -7,6 +7,7 @@
 #include "EVP_kem.h"
 #include "sike_r3/sike_internal.h"
 #include "../include/openssl/mem.h"
+#include "../crypto/test/test_util.h"
 
 TEST(Kem_test, Basic_alloc_and_free) {
 
@@ -130,7 +131,7 @@ TEST(Kem_test, Basic_API_Calls) {
     OPENSSL_free(kem_params);
 }
 
-TEST(Kem_test, Basic_GarbageValue) {
+TEST(Kem_test, Basic_Compare_Bytes) {
     // Initialize sike kem and kem_params
     const struct pq_kem *kem = &evp_sike_p434_r3;
     pq_kem_params *kem_params = (pq_kem_params*)OPENSSL_malloc(sizeof(pq_kem_params));
@@ -146,7 +147,8 @@ TEST(Kem_test, Basic_GarbageValue) {
     EXPECT_TRUE(kem->generate_keypair(kem_params->public_key, kem_params->private_key));
     EXPECT_TRUE(kem->encapsulate(kem_params->ciphertext, client_shared_secret, kem_params->public_key));
     EXPECT_TRUE(kem->decapsulate(server_shared_secret, kem_params->ciphertext, kem_params->private_key));
-    EXPECT_TRUE(server_shared_secret == client_shared_secret);
+    EXPECT_EQ(Bytes((const char*) server_shared_secret), Bytes((const char*) client_shared_secret));
+    //EXPECT_THAT(server_shared_secret, client_shared_secret);
 
     // By design, if an invalid private key + ciphertext pair is provided to decapsulate(),
     // the function should still succeed; however, the shared secret that was "decapsulated"
@@ -155,7 +157,8 @@ TEST(Kem_test, Basic_GarbageValue) {
     kem_params->ciphertext[0] ^= 1; // Flip a bit to invalidate the ciphertext
 
     EXPECT_TRUE(kem->decapsulate(server_shared_secret, kem_params->ciphertext, kem_params->private_key));
-    EXPECT_TRUE(server_shared_secret != client_shared_secret);
+    ASSERT_NE(Bytes((const char*) server_shared_secret), Bytes((const char*) client_shared_secret));
+    //EXPECT_FALSE(EXPECT_THAT(server_shared_secret, client_shared_secret));
 
     // Clean up
     EXPECT_TRUE(pq_kem_params_free(kem_params));
