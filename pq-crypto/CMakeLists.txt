@@ -18,12 +18,10 @@ cmake_minimum_required (VERSION 2.8.12)
 include_directories(../include)
 include_directories(../crypto)
 
-# get all header and source files
-#file(GLOB PQ_HEADERS "*.h" "sike_r3/*.h")
+# get all source files
 file(GLOB PQ_SRC "*.c" "sike_r3/*.c")
 
 # compile
-#add_library(pq-crypto ${PQ_HEADERS} ${PQ_SRC}) // bc I think cmake doesn't need the headers
 add_library(pq-crypto ${PQ_SRC})
 
 add_dependencies(pq-crypto global_target)
