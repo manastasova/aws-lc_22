@@ -70,7 +70,7 @@ void OPENSSL_cpuid_setup(void) {
   }
   if (has_hw_feature("hw.optional.armv8_2_sha3")) {
     OPENSSL_armcap_P |= ARMV8_SHA3;
-    printf("hw.optional.armv8_2_sha3 %d \n\n", (OPENSSL_armcap_P << 7) & 0x1);
+    printf("hw.optional.armv8_2_sha3 %d \n\n", (OPENSSL_armcap_P << 17) & 0x1);
   }
 }
 

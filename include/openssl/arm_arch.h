@@ -79,7 +79,7 @@
 #define ARMV8_SHA512 (1 << 6)
 
 // ARMV8_SHA3 indicates support for hardware SHA3 instructions.
-#define ARMV8_SHA3 (1 << 7)
+#define ARMV8_SHA3 (1 << 17)
 
 #if defined(__ASSEMBLER__)
 

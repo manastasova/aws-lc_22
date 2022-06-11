@@ -88,6 +88,7 @@ void OPENSSL_cpuid_setup(void) {
   static const unsigned long kPMULL = 1 << 4;
   static const unsigned long kSHA1 = 1 << 5;
   static const unsigned long kSHA256 = 1 << 6;
+  static const unsigned long kSHA3 = 1 << 17;
   static const unsigned long kSHA512 = 1 << 21;
 
   if ((hwcap & kNEON) == 0) {
@@ -113,6 +114,11 @@ void OPENSSL_cpuid_setup(void) {
   if (hwcap & kSHA512) {
     OPENSSL_armcap_P |= ARMV8_SHA512;
   }
+  if (hwcap & kSHA3) {
+    OPENSSL_armcap_P |= ARMV8_SHA3;
+  }
+
+  printf("into Linux system %d \n\n", (OPENSSL_armcap_P << 17) & 0x1);
 
   // OPENSSL_armcap is a 32-bit, unsigned value which may start with "0x" to
   // indicate a hex value. Prior to the 32-bit value, a '~' or '|' may be given.
