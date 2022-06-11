@@ -13,6 +13,7 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
 
 #include "../../internal.h"
+#include <stdio.h>
 
 #if defined(OPENSSL_AARCH64) && defined(OPENSSL_APPLE) && \
     !defined(OPENSSL_STATIC_ARMCAP)
@@ -66,6 +67,10 @@ void OPENSSL_cpuid_setup(void) {
   // better compatibility and handle static features above.
   if (has_hw_feature("hw.optional.armv8_2_sha512")) {
     OPENSSL_armcap_P |= ARMV8_SHA512;
+  }
+  if (has_hw_feature("hw.optional.armv8_2_sha3")) {
+    OPENSSL_armcap_P |= ARMV8_SHA3;
+    printf("hw.optional.armv8_2_sha3 %d \n\n", (OPENSSL_armcap_P << 7) & 0x1);
   }
 }
 

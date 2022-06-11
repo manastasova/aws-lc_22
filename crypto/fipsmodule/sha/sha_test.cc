@@ -58,4 +58,17 @@ TEST(SHATest, SHA512ABI) {
   CHECK_ABI(sha512_block_data_order, ctx.h, kBuf, 3);
   CHECK_ABI(sha512_block_data_order, ctx.h, kBuf, 4);
 }
+
+//TODO: REMOVE 
+TEST(SHATest, SHA3_256) {
+//helper function to print the digest bytes as a hex string
+      uint8_t data[7]= "abcdef";
+      uint8_t out[32];
+      SHA3_256(data, 6 , out);
+      for (int i = 0; i < 256/8; i++)
+      {
+        printf("%x", out[i]);
+      }
+      
+}
 #endif  // SHA512_ASM && SUPPORTS_ABI_TEST
