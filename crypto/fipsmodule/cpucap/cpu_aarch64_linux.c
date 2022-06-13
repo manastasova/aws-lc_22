@@ -118,7 +118,7 @@ void OPENSSL_cpuid_setup(void) {
     OPENSSL_armcap_P |= ARMV8_SHA3;
   }
 
-  printf("into Linux system %d \n\n", (OPENSSL_armcap_P << 17) & 0x1);
+  printf("into Linux system %d \n\n", (OPENSSL_armcap_P >> 17) & 0x1);
 
   // OPENSSL_armcap is a 32-bit, unsigned value which may start with "0x" to
   // indicate a hex value. Prior to the 32-bit value, a '~' or '|' may be given.
