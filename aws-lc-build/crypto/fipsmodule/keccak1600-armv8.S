@@ -15,6 +15,46 @@
 #include <openssl/arm_arch.h>
 
 .text
+
+
+.private_extern	_OPENSSL_armcap_P
+.globl	_SHA3_Absorb
+.private_extern	_SHA3_Absorb
+
+.align	6
+_SHA3_Absorb:
+	AARCH64_VALID_CALL_TARGET
+#ifndef	__KERNEL__
+#if __has_feature(hwaddress_sanitizer) && __clang_major__ >= 10
+	adrp	x16,:pg_hi21_nc:_OPENSSL_armcap_P
+#else
+	adrp	x16,_OPENSSL_armcap_P@PAGE
+#endif
+	ldr	w16,[x16,_OPENSSL_armcap_P@PAGEOFF]
+	tst	w16,#ARMV8_SHA3
+	b.ne	.SHA3_Absorb_armv8_ext
+	b	.SHA3_Absorb_armv8_org
+#endif
+
+.globl	_SHA3_Squeeze
+.private_extern	_SHA3_Squeeze
+
+.align	6
+_SHA3_Squeeze:
+	AARCH64_VALID_CALL_TARGET
+#ifndef	__KERNEL__
+#if __has_feature(hwaddress_sanitizer) && __clang_major__ >= 10
+	adrp	x16,:pg_hi21_nc:_OPENSSL_armcap_P
+#else
+	adrp	x16,_OPENSSL_armcap_P@PAGE
+#endif
+	ldr	w16,[x16,_OPENSSL_armcap_P@PAGEOFF]
+	tst	w16,#ARMV8_SHA3
+	b.ne	.SHA3_Squeeze_armv8_ext
+	b	.SHA3_Squeeze_armv8_org
+#endif
+
+.text
 .align	8	// strategic alignment and padding that allows to use
 		// address value as loop termination condition...
 .quad	0,0,0,0,0,0,0,0
@@ -60,16 +100,16 @@ Loop:
 	eor	x27,x1,x6
 	eor	x28,x2,x7
 	eor	x30,x3,x8
-	eor	x4,x4,x9
-	eor	x26,x26,x10
-	eor	x27,x27,x11
-	eor	x28,x28,x12
-	eor	x30,x30,x13
-	eor	x4,x4,x14
-	eor	x26,x26,x15
-	eor	x27,x27,x16
-	eor	x28,x28,x17
-	eor	x30,x30,x25
+	//eor	x4,x4,x9
+	//eor	x26,x26,x10
+	//eor	x27,x27,x11
+	//eor	x28,x28,x12
+	//eor	x30,x30,x13
+	//eor	x4,x4,x14
+	//eor	x26,x26,x15
+	//eor	x27,x27,x16
+	//eor	x28,x28,x17
+	//eor	x30,x30,x25
 	eor	x4,x4,x19
 	eor	x26,x26,x20
 	eor	x28,x28,x22
@@ -274,11 +314,12 @@ KeccakF1600:
 	ret
 
 
-.globl	_SHA3_Absorb
-.private_extern	_SHA3_Absorb
+.globl	_SHA3_Absorb_armv8
+.private_extern	_SHA3_Absorb_armv8
 
 .align	5
-_SHA3_Absorb:
+_SHA3_Absorb_armv8:
+.SHA3_Absorb_armv8_org:
 	AARCH64_SIGN_LINK_REGISTER
 	stp	x29,x30,[sp,#-128]!
 	add	x29,sp,#0
@@ -516,11 +557,12 @@ Labsorbed:
 	AARCH64_VALIDATE_LINK_REGISTER
 	ret
 
-.globl	_SHA3_Squeeze
-.private_extern	_SHA3_Squeeze
+.globl	_SHA3_Squeeze_armv8
+.private_extern	_SHA3_Squeeze_armv8
 
 .align	5
-_SHA3_Squeeze:
+_SHA3_Squeeze_armv8:
+.SHA3_Squeeze_armv8_ext:
 	AARCH64_SIGN_LINK_REGISTER
 	stp	x29,x30,[sp,#-48]!
 	add	x29,sp,#0
@@ -741,6 +783,7 @@ KeccakF1600_cext:
 
 .align	5
 _SHA3_Absorb_cext:
+.SHA3_Absorb_armv8_ext:
 	AARCH64_SIGN_LINK_REGISTER
 	stp	x29,x30,[sp,#-80]!
 	add	x29,sp,#0
@@ -965,6 +1008,7 @@ Labsorbed_ce:
 
 .align	5
 _SHA3_Squeeze_cext:
+.SHA3_Squeeze_armv8_org:
 	AARCH64_SIGN_LINK_REGISTER
 	stp	x29,x30,[sp,#-16]!
 	add	x29,sp,#0
