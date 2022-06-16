@@ -15,7 +15,7 @@ size_t SHA3_Absorb(uint64_t A[5][5], const unsigned char *inp, size_t len,
                    size_t r);
 void SHA3_Squeeze(uint64_t A[5][5], unsigned char *out, size_t len, size_t r);
 
-#if !defined(KECCAK1600_ASM) || !defined(SELFTEST)
+#if !defined(KECCAK1600_ASM)
 
 /*
  * Choose some sensible defaults
@@ -1083,6 +1083,7 @@ static uint64_t BitDeinterleave(uint64_t Ai)
 size_t SHA3_Absorb(uint64_t A[5][5], const unsigned char *inp, size_t len,
                    size_t r)
 {
+    printf("C SHA3_Absorb");
     uint64_t *A_flat = (uint64_t *)A;
     size_t i, w = r / 8;
 

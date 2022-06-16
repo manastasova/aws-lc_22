@@ -52,18 +52,33 @@
 
 # $output is the last argument if it looks like a file (it has an extension)
 # $flavour is the first argument if it doesn't look like a file
-$output = $#ARGV >= 0 && $ARGV[$#ARGV] =~ m|\.\w+$| ? pop : undef;
-$flavour = $#ARGV >= 0 && $ARGV[0] !~ m|\.| ? shift : undef;
+# The first two arguments should always be the flavour and output file path.
+if ($#ARGV < 1) { die "Not enough arguments provided.
+  Two arguments are necessary: the flavour and the output file path."; }
+
+$flavour = shift;
+$output  = shift;
 
 $win64=0; $win64=1 if ($flavour =~ /[nm]asm|mingw64/ || $output =~ /\.asm$/);
 
 $0 =~ m/(.*[\/\\])[^\/\\]+$/; $dir=$1;
 ( $xlate="${dir}x86_64-xlate.pl" and -f $xlate ) or
-( $xlate="${dir}../../perlasm/x86_64-xlate.pl" and -f $xlate) or
+( $xlate="${dir}../../../perlasm/x86_64-xlate.pl" and -f $xlate) or
 die "can't locate x86_64-xlate.pl";
 
-open OUT,"| \"$^X\" \"$xlate\" $flavour \"$output\""
-    or die "can't call $xlate: $!";
+# In upstream, this is controlled by shelling out to the compiler to check
+# versions, but BoringSSL is intended to be used with pre-generated perlasm
+# output, so this isn't useful anyway.
+#
+# This file also has an AVX2 implementation, controlled by setting $avx to 2.
+# For now, we intentionally disable it. While it gives a 13-16% perf boost, the
+# CFI annotations are wrong. It allocates stack in a loop and should be
+# rewritten to avoid this.
+$avx = 1;
+$shaext=1;
+for (@ARGV) { $avx = 0 if (/-DMY_ASSEMBLER_IS_TOO_OLD_FOR_AVX/); }
+
+open OUT,"| \"$^X\" \"$xlate\" $flavour \"$output\"";
 *STDOUT=*OUT;
 
 my @A = map([ 8*$_-100, 8*($_+1)-100, 8*($_+2)-100,
@@ -412,10 +427,10 @@ ___
 { my ($A_flat,$inp,$len,$bsz) = ("%rdi","%rsi","%rdx","%rcx");
      ($A_flat,$inp) = ("%r8","%r9");
 $code.=<<___;
-.globl	SHA3_absorb
-.type	SHA3_absorb,\@function,4
+.globl	SHA3_Absorb
+.type	SHA3_Absorb,\@function,4
 .align	32
-SHA3_absorb:
+SHA3_Absorb:
 .cfi_startproc
 	push	%rbx
 .cfi_push	%rbx
@@ -500,17 +515,17 @@ SHA3_absorb:
 .cfi_pop	%rbx
 	ret
 .cfi_endproc
-.size	SHA3_absorb,.-SHA3_absorb
+.size	SHA3_Absorb,.-SHA3_Absorb
 ___
 }
 { my ($A_flat,$out,$len,$bsz) = ("%rdi","%rsi","%rdx","%rcx");
      ($out,$len,$bsz) = ("%r12","%r13","%r14");
 
 $code.=<<___;
-.globl	SHA3_squeeze
-.type	SHA3_squeeze,\@function,4
+.globl	SHA3_Squeeze
+.type	SHA3_Squeeze,\@function,4
 .align	32
-SHA3_squeeze:
+SHA3_Squeeze:
 .cfi_startproc
 	push	%r12
 .cfi_push	%r12
@@ -561,7 +576,7 @@ SHA3_squeeze:
 .cfi_pop	%r13
 	ret
 .cfi_endproc
-.size	SHA3_squeeze,.-SHA3_squeeze
+.size	SHA3_Squeeze,.-SHA3_Squeeze
 ___
 }
 $code.=<<___;

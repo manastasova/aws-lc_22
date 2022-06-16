@@ -63,7 +63,6 @@ if(ARCH STREQUAL "arm")
     bsaes-armv7.${ASM_EXT}
     ghash-armv4.${ASM_EXT}
     ghashv8-armx.${ASM_EXT}
-    keccak1600-armv4.${ASM_EXT}
     sha1-armv4-large.${ASM_EXT}
     sha256-armv4.${ASM_EXT}
     sha512-armv4.${ASM_EXT}
@@ -119,7 +118,6 @@ if(PERL_EXECUTABLE)
   perlasm(ghash-ssse3-x86.${ASM_EXT} modes/asm/ghash-ssse3-x86.pl)
   perlasm(ghash-x86_64.${ASM_EXT} modes/asm/ghash-x86_64.pl)
   perlasm(ghash-x86.${ASM_EXT} modes/asm/ghash-x86.pl)
-  perlasm(keccak1600-armv4.${ASM_EXT} sha/asm/keccak1600-armv4.pl)
   perlasm(keccak1600-armv8.${ASM_EXT} sha/asm/keccak1600-armv8.pl)
   perlasm(keccak1600-x86_64.${ASM_EXT} sha/asm/keccak1600-x86_64.pl)
   perlasm(md5-586.${ASM_EXT} md5/asm/md5-586.pl)

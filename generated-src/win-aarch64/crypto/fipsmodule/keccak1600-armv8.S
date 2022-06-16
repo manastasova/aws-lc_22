@@ -16,6 +16,50 @@
 #include <openssl/arm_arch.h>
 
 .text
+
+
+
+.globl	SHA3_Absorb
+
+.def SHA3_Absorb
+   .type 32
+.endef
+.align	6
+SHA3_Absorb:
+	AARCH64_VALID_CALL_TARGET
+#ifndef	__KERNEL__
+#if __has_feature(hwaddress_sanitizer) && __clang_major__ >= 10
+	adrp	x16,:pg_hi21_nc:OPENSSL_armcap_P
+#else
+	adrp	x16,OPENSSL_armcap_P
+#endif
+	ldr	w16,[x16,:lo12:OPENSSL_armcap_P]
+	tst	w16,#ARMV8_SHA3
+	b.ne	.SHA3_Absorb_armv8_ext
+	b	.SHA3_Absorb_armv8_org
+#endif
+
+.globl	SHA3_Squeeze
+
+.def SHA3_Squeeze
+   .type 32
+.endef
+.align	6
+SHA3_Squeeze:
+	AARCH64_VALID_CALL_TARGET
+#ifndef	__KERNEL__
+#if __has_feature(hwaddress_sanitizer) && __clang_major__ >= 10
+	adrp	x16,:pg_hi21_nc:OPENSSL_armcap_P
+#else
+	adrp	x16,OPENSSL_armcap_P
+#endif
+	ldr	w16,[x16,:lo12:OPENSSL_armcap_P]
+	tst	w16,#ARMV8_SHA3
+	b.ne	.SHA3_Squeeze_armv8_ext
+	b	.SHA3_Squeeze_armv8_org
+#endif
+
+.text
 .align	8	// strategic alignment and padding that allows to use
 		// address value as loop termination condition...
 .quad	0,0,0,0,0,0,0,0
@@ -63,16 +107,16 @@ Loop:
 	eor	x27,x1,x6
 	eor	x28,x2,x7
 	eor	x30,x3,x8
-	eor	x4,x4,x9
-	eor	x26,x26,x10
-	eor	x27,x27,x11
-	eor	x28,x28,x12
-	eor	x30,x30,x13
-	eor	x4,x4,x14
-	eor	x26,x26,x15
-	eor	x27,x27,x16
-	eor	x28,x28,x17
-	eor	x30,x30,x25
+	//eor	x4,x4,x9
+	//eor	x26,x26,x10
+	//eor	x27,x27,x11
+	//eor	x28,x28,x12
+	//eor	x30,x30,x13
+	//eor	x4,x4,x14
+	//eor	x26,x26,x15
+	//eor	x27,x27,x16
+	//eor	x28,x28,x17
+	//eor	x30,x30,x25
 	eor	x4,x4,x19
 	eor	x26,x26,x20
 	eor	x28,x28,x22
@@ -279,13 +323,14 @@ KeccakF1600:
 	ret
 
 
-.globl	SHA3_Absorb
+.globl	SHA3_Absorb_armv8
 
-.def SHA3_Absorb
+.def SHA3_Absorb_armv8
    .type 32
 .endef
 .align	5
-SHA3_Absorb:
+SHA3_Absorb_armv8:
+.SHA3_Absorb_armv8_org:
 	AARCH64_SIGN_LINK_REGISTER
 	stp	x29,x30,[sp,#-128]!
 	add	x29,sp,#0
@@ -523,13 +568,14 @@ Labsorbed:
 	AARCH64_VALIDATE_LINK_REGISTER
 	ret
 
-.globl	SHA3_Squeeze
+.globl	SHA3_Squeeze_armv8
 
-.def SHA3_Squeeze
+.def SHA3_Squeeze_armv8
    .type 32
 .endef
 .align	5
-SHA3_Squeeze:
+SHA3_Squeeze_armv8:
+.SHA3_Squeeze_armv8_ext:
 	AARCH64_SIGN_LINK_REGISTER
 	stp	x29,x30,[sp,#-48]!
 	add	x29,sp,#0
@@ -607,16 +653,16 @@ KeccakF1600_ce:
 .align	4
 Loop_ce:
 	////////////////////////////////////////////////// Theta
-.long	0xce0f2a99	//eor3 v25.16b,v20.16b,v15.16b,v10.16b
-.long	0xce102eba	//eor3 v26.16b,v21.16b,v16.16b,v11.16b
-.long	0xce1132db	//eor3 v27.16b,v22.16b,v17.16b,v12.16b
-.long	0xce1236fc	//eor3 v28.16b,v23.16b,v18.16b,v13.16b
-.long	0xce133b1d	//eor3 v29.16b,v24.16b,v19.16b,v14.16b
-.long	0xce050339	//eor3 v25.16b,v25.16b,   v5.16b,v0.16b
-.long	0xce06075a	//eor3 v26.16b,v26.16b,   v6.16b,v1.16b
-.long	0xce070b7b	//eor3 v27.16b,v27.16b,   v7.16b,v2.16b
-.long	0xce080f9c	//eor3 v28.16b,v28.16b,   v8.16b,v3.16b
-.long	0xce0913bd	//eor3 v29.16b,v29.16b,   v9.16b,v4.16b
+	//.inst	0xce0f2a99	//eor3 v25.16b,v20.16b,v15.16b,v10.16b
+	//.inst	0xce102eba	//eor3 v26.16b,v21.16b,v16.16b,v11.16b
+	//.inst	0xce1132db	//eor3 v27.16b,v22.16b,v17.16b,v12.16b
+	//.inst	0xce1236fc	//eor3 v28.16b,v23.16b,v18.16b,v13.16b
+	//.inst	0xce133b1d	//eor3 v29.16b,v24.16b,v19.16b,v14.16b
+	//.inst	0xce050339	//eor3 v25.16b,v25.16b,   v5.16b,v0.16b
+	//.inst	0xce06075a	//eor3 v26.16b,v26.16b,   v6.16b,v1.16b
+	//.inst	0xce070b7b	//eor3 v27.16b,v27.16b,   v7.16b,v2.16b
+	//.inst	0xce080f9c	//eor3 v28.16b,v28.16b,   v8.16b,v3.16b
+	//.inst	0xce0913bd	//eor3 v29.16b,v29.16b,   v9.16b,v4.16b
 
 .long	0xce7b8f3e	//rax1 v30.16b,v25.16b,v27.16b			// D[1]
 .long	0xce7c8f5f	//rax1 v31.16b,v26.16b,v28.16b			// D[2]
@@ -756,6 +802,7 @@ KeccakF1600_cext:
 .endef
 .align	5
 SHA3_Absorb_cext:
+.SHA3_Absorb_armv8_ext:
 	AARCH64_SIGN_LINK_REGISTER
 	stp	x29,x30,[sp,#-80]!
 	add	x29,sp,#0
@@ -982,6 +1029,7 @@ Labsorbed_ce:
 .endef
 .align	5
 SHA3_Squeeze_cext:
+.SHA3_Squeeze_armv8_org:
 	AARCH64_SIGN_LINK_REGISTER
 	stp	x29,x30,[sp,#-16]!
 	add	x29,sp,#0

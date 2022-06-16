@@ -47,9 +47,8 @@ void sha512_block_data_order(uint64_t *state, const uint8_t *in,
 
 //CHANGE THE "FALG" for SHA#_ASM support 
 #if !defined(OPENSSL_NO_ASM) &&                          \
-    (defined(OPENSSL_X86_64) ||                          \
-     defined(OPENSSL_ARM) || defined(OPENSSL_AARCH64))
-    #define KECCAK1600_ASM
+    (defined(OPENSSL_X86_64) || defined(OPENSSL_AARCH64))
+#define KECCAK1600_ASM
 #endif
 
 //#if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_AARCH64)
