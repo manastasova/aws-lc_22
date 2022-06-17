@@ -11,6 +11,18 @@
 #include <openssl/sha3.h>
 #include <string.h>
 
+// Single-Shot SHA3-224
+uint8_t *SHA3_224(const uint8_t *data, size_t len,
+                  uint8_t out[SHA3_224_DIGEST_LENGTH]) {
+  KECCAK1600_CTX ctx;
+  size_t size = 224;
+  unsigned char ack = 6;
+  SHA3_Init(&ctx, ack, size) && SHA3_Update(&ctx, data, len) &&
+                 SHA3_Final(out, &ctx);
+  OPENSSL_cleanse(&ctx, sizeof(ctx));
+  return out;
+}
+
 // Single-Shot SHA3-256
 uint8_t *SHA3_256(const uint8_t *data, size_t len,
                   uint8_t out[SHA3_256_DIGEST_LENGTH]) {
@@ -27,6 +39,39 @@ uint8_t *SHA3_256(const uint8_t *data, size_t len,
   if (ok) {
     FIPS_service_indicator_update_state();
   }
+  OPENSSL_cleanse(&ctx, sizeof(ctx));
+  return out;
+}
+
+// Single-Shot SHA3-256
+uint8_t *SHA3_384(const uint8_t *data, size_t len,
+                  uint8_t out[SHA3_384_DIGEST_LENGTH]) {
+  // We have to verify that all the SHA services actually succeed before
+  // updating the indicator state, so we lock the state here.
+
+  FIPS_service_indicator_lock_state();
+  KECCAK1600_CTX ctx;
+  unsigned char ack = 6;
+  const int ok = SHA3_Init(&ctx, ack, 384) && SHA3_Update(&ctx, data, len) &&
+                 SHA3_Final(out, &ctx);
+  FIPS_service_indicator_unlock_state();
+  if (ok) {
+    FIPS_service_indicator_update_state();
+  }
+  OPENSSL_cleanse(&ctx, sizeof(ctx));
+  return out;
+}
+
+uint8_t *SHA3_512(const uint8_t *data, size_t len,
+                  uint8_t out[SHA3_512_DIGEST_LENGTH]) {
+  // We have to verify that all the SHA services actually succeed before
+  // updating the indicator state, so we lock the state here.
+
+  KECCAK1600_CTX ctx;
+  size_t size = 512;
+  unsigned char ack = 6;
+  SHA3_Init(&ctx, ack, size) && SHA3_Update(&ctx, data, len) &&
+                 SHA3_Final(out, &ctx);
   OPENSSL_cleanse(&ctx, sizeof(ctx));
   return out;
 }

@@ -59,6 +59,20 @@ TEST(SHATest, SHA512ABI) {
   CHECK_ABI(sha512_block_data_order, ctx.h, kBuf, 4);
 }
 
+
+//TODO: REMOVE 
+TEST(SHATest, SHA3_224) {
+//helper function to print the digest bytes as a hex string
+      uint8_t data[7]= "abcdef";
+      uint8_t out[28];
+      SHA3_224(data, 6 , out);
+      for (int i = 0; i < 224/8; i++)
+      {
+        printf("%x", out[i]);
+      }
+      
+}
+
 //TODO: REMOVE 
 TEST(SHATest, SHA3_256) {
 //helper function to print the digest bytes as a hex string
@@ -66,6 +80,32 @@ TEST(SHATest, SHA3_256) {
       uint8_t out[32];
       SHA3_256(data, 6 , out);
       for (int i = 0; i < 256/8; i++)
+      {
+        printf("%x", out[i]);
+      }
+      
+}
+
+//TODO: REMOVE 
+TEST(SHATest, SHA3_384) {
+//helper function to print the digest bytes as a hex string
+      uint8_t data[7]= "abcdef";
+      uint8_t out[48];
+      SHA3_384(data, 6 , out);
+      for (int i = 0; i < 384/8; i++)
+      {
+        printf("%x", out[i]);
+      }
+      
+}
+
+//TODO: REMOVE 
+TEST(SHATest, SHA3_512) {
+//helper function to print the digest bytes as a hex string
+      uint8_t data[7]= "abcdef";
+      uint8_t out[64];
+      SHA3_512(data, 6 , out);
+      for (int i = 0; i < 512/8; i++)
       {
         printf("%x", out[i]);
       }

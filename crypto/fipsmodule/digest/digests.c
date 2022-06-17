@@ -267,7 +267,31 @@ DEFINE_METHOD_FUNCTION(EVP_MD, EVP_sha512_256) {
   out->ctx_size = sizeof(SHA512_CTX);
 }
 
-//MVP_MD for SHA3_256
+
+static void sha3_224_init(EVP_MD_CTX *ctx) {
+  unsigned char ack = 6;
+  size_t size = 224;
+  CHECK(SHA3_Init(ctx->md_data, ack , size));
+}
+
+static void sha3_224_update(EVP_MD_CTX *ctx, const void *data, size_t count) {
+  CHECK(SHA3_Update(ctx->md_data, data, count));
+}
+
+static void sha3_224_final(EVP_MD_CTX *ctx, uint8_t *md) {
+  CHECK(SHA3_Final(md, ctx->md_data));
+}
+
+DEFINE_METHOD_FUNCTION(EVP_MD, EVP_sha3_224) {
+  out->type = NID_sha3_256;
+  out->md_size = SHA3_224_DIGEST_LENGTH;
+  out->flags = 0;
+  out->init = sha3_224_init;
+  out->update = sha3_224_update;
+  out->final = sha3_224_final;
+  out->ctx_size = sizeof(KECCAK1600_CTX);
+}
+
 static void sha3_256_init(EVP_MD_CTX *ctx) {
   unsigned char ack = 6;
   size_t size = 256;
@@ -290,6 +314,56 @@ DEFINE_METHOD_FUNCTION(EVP_MD, EVP_sha3_256) {
   out->update = sha3_256_update;
   out->final = sha3_256_final;
   out->block_size = 64;
+  out->ctx_size = sizeof(KECCAK1600_CTX);
+}
+
+
+static void sha3_384_init(EVP_MD_CTX *ctx) {
+  unsigned char ack = 6;
+  size_t size = 384;
+  CHECK(SHA3_Init(ctx->md_data, ack , size));
+}
+
+static void sha3_384_update(EVP_MD_CTX *ctx, const void *data, size_t count) {
+  CHECK(SHA3_Update(ctx->md_data, data, count));
+}
+
+static void sha3_384_final(EVP_MD_CTX *ctx, uint8_t *md) {
+  CHECK(SHA3_Final(md, ctx->md_data));
+}
+
+DEFINE_METHOD_FUNCTION(EVP_MD, EVP_sha3_384) {
+  out->type = NID_sha3_256;
+  out->md_size = SHA3_384_DIGEST_LENGTH;
+  out->flags = 0;
+  out->init = sha3_384_init;
+  out->update = sha3_384_update;
+  out->final = sha3_384_final;
+  out->ctx_size = sizeof(KECCAK1600_CTX);
+}
+
+
+static void sha3_512_init(EVP_MD_CTX *ctx) {
+  unsigned char ack = 6;
+  size_t size = 512;
+  CHECK(SHA3_Init(ctx->md_data, ack , size));
+}
+
+static void sha3_512_update(EVP_MD_CTX *ctx, const void *data, size_t count) {
+  CHECK(SHA3_Update(ctx->md_data, data, count));
+}
+
+static void sha3_512_final(EVP_MD_CTX *ctx, uint8_t *md) {
+  CHECK(SHA3_Final(md, ctx->md_data));
+}
+
+DEFINE_METHOD_FUNCTION(EVP_MD, EVP_sha3_512) {
+  out->type = NID_sha3_256;
+  out->md_size = SHA3_512_DIGEST_LENGTH;
+  out->flags = 0;
+  out->init = sha3_512_init;
+  out->update = sha3_512_update;
+  out->final = sha3_512_final;
   out->ctx_size = sizeof(KECCAK1600_CTX);
 }
 

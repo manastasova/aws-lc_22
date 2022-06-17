@@ -55,7 +55,10 @@ static const MD sha256 = { "SHA256", &EVP_sha256, &SHA256 };
 static const MD sha384 = { "SHA384", &EVP_sha384, &SHA384 };
 static const MD sha512 = { "SHA512", &EVP_sha512, &SHA512 };
 static const MD sha512_256 = { "SHA512-256", &EVP_sha512_256, &SHA512_256 };
+static const MD sha3_224 = { "SHA3-224", &EVP_sha3_224, &SHA3_224 };
 static const MD sha3_256 = { "SHA3-256", &EVP_sha3_256, &SHA3_256 };
+static const MD sha3_384 = { "SHA3-384", &EVP_sha3_384, &SHA3_384 };
+static const MD sha3_512 = { "SHA3-512", &EVP_sha3_512, &SHA3_512 };
 static const MD md5_sha1 = { "MD5-SHA1", &EVP_md5_sha1, nullptr };
 static const MD blake2b256 = { "BLAKE2b-256", &EVP_blake2b256, nullptr };
 
@@ -145,6 +148,18 @@ static const DigestTestVector kTestVectors[] = {
      "klmnopqklmnopqrlmnopqrsmnopqrstnopqrstu",
      1, "3928e184fb8690f840da3988121d31be65cb9d3ef83ee6146feac861e19b563a"},
 
+    // SHA3-224 tests checked with
+    // https://emn178.github.io/online-tools/sha3_224.html
+    {sha3_224, "", 1, "6b4e03423667dbb73b6e15454f0eb1abd4597f9a1b078e3f5b5a6bc7"},
+    {sha3_224, "123", 1, "602bdc204140db016bee5374895e5568ce422fabe17e064061d80097"},
+    {sha3_224, "abcdef", 1, "ceb3f4cd85af081120bf69ecf76bf61232bd5d810866f0eca3c8907d"},
+    {sha3_224, "a", 1, "9e86ff69557ca95f405f081269685b38e3a819b309ee942f482b6a8b"},
+    {sha3_224, "abc", 3, "f82797eede9db66a7ba4b52a98ecce4675ff3ad787ca74cb6e14a5ac"},
+    {sha3_224, "message digest", 1, "18768bb4c48eb7fc88e5ddb17efcf2964abd7798a39d86a4b4a1e4c8"},
+    {sha3_224, "abcdefghijklmnopqrstuvwxyz", 1, "5cdeca81e123f87cad96b9cba999f16f6d41549608d4e0f4681b8239"},
+    {sha3_224, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", 1, "a67c289b8250a6f437a20137985d605589a8c163d45261b15419556e"},
+    {sha3_224, "1234567890", 1, "9877af03f5e1919851d0ef4ce6b23f1e85a40b446d93713f4c6e6dcd"},
+
     // SHA3-256 tests checked with
     // https://emn178.github.io/online-tools/sha3_256.html
     {sha3_256, "", 1, "a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a"},
@@ -156,6 +171,30 @@ static const DigestTestVector kTestVectors[] = {
     {sha3_256, "abcdefghijklmnopqrstuvwxyz", 1, "7cab2dc765e21b241dbc1c255ce620b29f527c6d5e7f5f843e56288f0d707521"},
     {sha3_256, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", 1, "a79d6a9da47f04a3b9a9323ec9991f2105d4c78a7bc7beeb103855a7a11dfb9f"},
     {sha3_256, "1234567890", 8, "293e5ce4ce54ee71990ab06e511b7ccd62722b1beb414f5ff65c8274e0f5be1d"},
+    
+    // SHA3-384 tests checked with
+    // https://emn178.github.io/online-tools/sha3_384.html
+    {sha3_384, "", 1, "0c63a75b845e4f7d01107d852e4c2485c51a50aaaa94fc61995e71bbee983a2ac3713831264adb47fb6bd1e058d5f004"},
+    {sha3_384, "123", 1, "9bd942d1678a25d029b114306f5e1dae49fe8abeeacd03cfab0f156aa2e363c988b1c12803d4a8c9ba38fdc873e5f007"},
+    {sha3_384, "abcdef", 1, "d77460b0ce6109168480e279a81af32facb689ab96e22623f0122ff3a10ead263db6607f83876a843d3264dc2a863805"},
+    {sha3_384, "a", 1, "1815f774f320491b48569efec794d249eeb59aae46d22bf77dafe25c5edc28d7ea44f93ee1234aa88f61c91912a4ccd9"},
+    {sha3_384, "abc", 3, "382d39b5f929158b788429fd639381246273b88286add31531d6aa3f44774ed48cd1051805676660c5b00a26a01b5244"},
+    {sha3_384, "message digest", 1, "d9519709f44af73e2c8e291109a979de3d61dc02bf69def7fbffdfffe662751513f19ad57e17d4b93ba1e484fc1980d5"},
+    {sha3_384, "abcdefghijklmnopqrstuvwxyz", 1, "fed399d2217aaf4c717ad0c5102c15589e1c990cc2b9a5029056a7f7485888d6ab65db2370077a5cadb53fc9280d278f"},
+    {sha3_384, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", 1, "d5b972302f5080d0830e0de7b6b2cf383665a008f4c4f386a61112652c742d20cb45aa51bd4f542fc733e2719e999291"},
+    {sha3_384, "1234567890", 1, "6fdddab7d670f202629531c1a51b32ca30696d0af4dd5b0fbb5f82c0aba5e505110455f37d7ef73950c2bb0495a38f56"},
+
+    // SHA3-256 tests checked with
+    // https://emn178.github.io/online-tools/sha3_512.html
+    {sha3_512, "", 1, "a69f73cca23a9ac5c8b567dc185a756e97c982164fe25859e0d1dcc1475c80a615b2123af1f5f94c11e3e9402c3ac558f500199d95b6d3e301758586281dcd26"},
+    {sha3_512, "123", 1, "48c8947f69c054a5caa934674ce8881d02bb18fb59d5a63eeaddff735b0e9801e87294783281ae49fc8287a0fd86779b27d7972d3e84f0fa0d826d7cb67dfefc"},
+    {sha3_512, "abcdef", 1, "01309a45c57cd7faef9ee6bb95fed29e5e2e0312af12a95fffeee340e5e5948b4652d26ae4b75976a53cc1612141af6e24df36517a61f46a1a05f59cf667046a"},
+    {sha3_512, "a", 1, "697f2d856172cb8309d6b8b97dac4de344b549d4dee61edfb4962d8698b7fa803f4f93ff24393586e28b5b957ac3d1d369420ce53332712f997bd336d09ab02a"},
+    {sha3_512, "abc", 3, "82734a349a25b5017fbc9208a9fd545b5ea7ab795a1ce00eafd27e1ddbc89378bd6bedb6bbde3d748057c085e14c6f928fd18ea2257b8ab329e16b9cc39a105f"},
+    {sha3_512, "message digest", 1, "3444e155881fa15511f57726c7d7cfe80302a7433067b29d59a71415ca9dd141ac892d310bc4d78128c98fda839d18d7f0556f2fe7acb3c0cda4bff3a25f5f59"},
+    {sha3_512, "abcdefghijklmnopqrstuvwxyz", 1, "af328d17fa28753a3c9f5cb72e376b90440b96f0289e5703b729324a975ab384eda565fc92aaded143669900d761861687acdc0a5ffa358bd0571aaad80aca68"},
+    {sha3_512, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", 1, "d1db17b4745b255e5eb159f66593cc9c143850979fc7a3951796aba80165aab536b46174ce19e3f707f0e5c6487f5f03084bc0ec9461691ef20113e42ad28163"},
+    {sha3_512, "1234567890",1, "36dde7d288a2166a651d51ec6ded9e70e72cf6b366293d6f513c75393c57d6f33b949879b9d5e7f7c21cd8c02ede75e74fc54ea15bd043b4df008533fc68ae69"},
 
     // MD5-SHA1 tests.
     {md5_sha1, "abc", 1,

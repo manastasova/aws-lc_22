@@ -19,11 +19,20 @@
 extern "C" {
 #endif
 
+#define SHA3_224_DIGEST_LENGTH 28
 #define SHA3_256_DIGEST_LENGTH 32
+#define SHA3_384_DIGEST_LENGTH 48
+#define SHA3_512_DIGEST_LENGTH 64
 
 // Single-Shot API SHA3_256
+OPENSSL_EXPORT uint8_t *SHA3_224(const uint8_t *data, size_t len,
+                                 uint8_t out[SHA3_224_DIGEST_LENGTH]);
 OPENSSL_EXPORT uint8_t *SHA3_256(const uint8_t *data, size_t len,
                                  uint8_t out[SHA3_256_DIGEST_LENGTH]);
+OPENSSL_EXPORT uint8_t *SHA3_384(const uint8_t *data, size_t len,
+                                 uint8_t out[SHA3_384_DIGEST_LENGTH]);
+OPENSSL_EXPORT uint8_t *SHA3_512(const uint8_t *data, size_t len,
+                                 uint8_t out[SHA3_512_DIGEST_LENGTH]);
 
 #define KECCAK1600_WIDTH 1600
 #define SHA3_MDSIZE(bitlen) (bitlen / 8)
