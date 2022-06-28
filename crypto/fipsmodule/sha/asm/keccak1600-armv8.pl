@@ -111,6 +111,7 @@ SHA3_Absorb:
 ___
 $code.=<<___;
 	tst	w16,#ARMV8_SHA3
+	b.ne	.SHA3_Absorb_armv8_neon
 	b.ne	.SHA3_Absorb_armv8_ext
 	b       .SHA3_Absorb_armv8_org
 ___
@@ -132,6 +133,7 @@ SHA3_Squeeze:
 ___
 $code.=<<___;
 	tst	w16,#ARMV8_SHA3
+	b.ne	.SHA3_Squeeze_armv8_neon
 	b.ne	.SHA3_Squeeze_armv8_ext
 	b       .SHA3_Squeeze_armv8_org
 ___
@@ -598,6 +600,57 @@ SHA3_Squeeze_armv8:
 .size	SHA3_Squeeze,.-SHA3_Squeeze
 ___
 }								}}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 								{{{
 my @A = map([ "v".$_.".16b", "v".($_+1).".16b", "v".($_+2).".16b",
                              "v".($_+3).".16b", "v".($_+4).".16b" ],
@@ -905,6 +958,337 @@ SHA3_Squeeze_cext:
 .size	SHA3_Squeeze_cext,.-SHA3_Squeeze_cext
 ___
 }								}}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+								{{{
+my @A = map([ "v".$_.".16b", "v".($_+1).".16b", "v".($_+2).".16b",
+                             "v".($_+3).".16b", "v".($_+4).".16b" ],
+            (0, 5, 10, 15, 20));
+
+my @C = map("v$_.16b", (25..31));
+my @D = @C[4,5,6,2,3];
+
+$code.=<<___;
+.type	KeccakF1600_neon,%function
+.align	5
+KeccakF1600_neon:
+	mov	x9,#24
+	adr	x10,iotas
+	b	.Loop_neon
+.align	4
+.Loop_neon:
+	////////////////////////////////////////////////// Theta
+	eor3	$C[0],$A[4][0],$A[3][0],$A[2][0]
+	eor3	$C[1],$A[4][1],$A[3][1],$A[2][1]
+	eor3	$C[2],$A[4][2],$A[3][2],$A[2][2]
+	eor3	$C[3],$A[4][3],$A[3][3],$A[2][3]
+	eor3	$C[4],$A[4][4],$A[3][4],$A[2][4]
+	eor3	$C[0],$C[0],   $A[1][0],$A[0][0]
+	eor3	$C[1],$C[1],   $A[1][1],$A[0][1]
+	eor3	$C[2],$C[2],   $A[1][2],$A[0][2]
+	eor3	$C[3],$C[3],   $A[1][3],$A[0][3]
+	eor3	$C[4],$C[4],   $A[1][4],$A[0][4]
+
+	rax1	$C[5],$C[0],$C[2]			// D[1]
+	rax1	$C[6],$C[1],$C[3]			// D[2]
+	rax1	$C[2],$C[2],$C[4]			// D[3]
+	rax1	$C[3],$C[3],$C[0]			// D[4]
+	rax1	$C[4],$C[4],$C[1]			// D[0]
+
+	////////////////////////////////////////////////// Theta+Rho+Pi
+	xar	$C[0],   $A[0][1],$D[1],#64-$rhotates[0][1] // C[0]=A[2][0]
+
+	xar	$A[0][1],$A[1][1],$D[1],#64-$rhotates[1][1]
+	xar	$A[1][1],$A[1][4],$D[4],#64-$rhotates[1][4]
+	xar	$A[1][4],$A[4][2],$D[2],#64-$rhotates[4][2]
+	xar	$A[4][2],$A[2][4],$D[4],#64-$rhotates[2][4]
+	xar	$A[2][4],$A[4][0],$D[0],#64-$rhotates[4][0]
+
+	xar	$C[1],   $A[0][2],$D[2],#64-$rhotates[0][2] // C[1]=A[4][0]
+
+	xar	$A[0][2],$A[2][2],$D[2],#64-$rhotates[2][2]
+	xar	$A[2][2],$A[2][3],$D[3],#64-$rhotates[2][3]
+	xar	$A[2][3],$A[3][4],$D[4],#64-$rhotates[3][4]
+	xar	$A[3][4],$A[4][3],$D[3],#64-$rhotates[4][3]
+	xar	$A[4][3],$A[3][0],$D[0],#64-$rhotates[3][0]
+
+	xar	$A[3][0],$A[0][4],$D[4],#64-$rhotates[0][4]
+
+	xar	$D[4],   $A[4][4],$D[4],#64-$rhotates[4][4] // D[4]=A[0][4]
+	xar	$A[4][4],$A[4][1],$D[1],#64-$rhotates[4][1]
+	xar	$A[1][3],$A[1][3],$D[3],#64-$rhotates[1][3] // A[1][3]=A[4][1]
+	xar	$A[0][4],$A[3][1],$D[1],#64-$rhotates[3][1] // A[0][4]=A[1][3]
+	xar	$A[3][1],$A[1][0],$D[0],#64-$rhotates[1][0]
+
+	xar	$A[1][0],$A[0][3],$D[3],#64-$rhotates[0][3]
+
+	eor	$A[0][0],$A[0][0],$D[0]
+
+	xar	$D[3],   $A[3][3],$D[3],#64-$rhotates[3][3] // D[3]=A[0][3]
+	xar	$A[0][3],$A[3][2],$D[2],#64-$rhotates[3][2] // A[0][3]=A[3][3]
+	xar	$D[1],   $A[2][1],$D[1],#64-$rhotates[2][1] // D[1]=A[3][2]
+	xar	$D[2],   $A[1][2],$D[2],#64-$rhotates[1][2] // D[2]=A[2][1]
+	xar	$D[0],   $A[2][0],$D[0],#64-$rhotates[2][0] // D[0]=A[1][2]
+
+	////////////////////////////////////////////////// Chi+Iota
+	bcax	$A[4][0],$C[1],   $A[4][2],$A[1][3]	// A[1][3]=A[4][1]
+	bcax	$A[4][1],$A[1][3],$A[4][3],$A[4][2]	// A[1][3]=A[4][1]
+	bcax	$A[4][2],$A[4][2],$A[4][4],$A[4][3]
+	bcax	$A[4][3],$A[4][3],$C[1],   $A[4][4]
+	bcax	$A[4][4],$A[4][4],$A[1][3],$C[1]	// A[1][3]=A[4][1]
+
+	ld1r	{$C[1]},[x10],#8
+
+	bcax	$A[3][2],$D[1],   $A[3][4],$A[0][3]	// A[0][3]=A[3][3]
+	bcax	$A[3][3],$A[0][3],$A[3][0],$A[3][4]	// A[0][3]=A[3][3]
+	bcax	$A[3][4],$A[3][4],$A[3][1],$A[3][0]
+	bcax	$A[3][0],$A[3][0],$D[1],   $A[3][1]
+	bcax	$A[3][1],$A[3][1],$A[0][3],$D[1]	// A[0][3]=A[3][3]
+
+	bcax	$A[2][0],$C[0],   $A[2][2],$D[2]
+	bcax	$A[2][1],$D[2],   $A[2][3],$A[2][2]
+	bcax	$A[2][2],$A[2][2],$A[2][4],$A[2][3]
+	bcax	$A[2][3],$A[2][3],$C[0],   $A[2][4]
+	bcax	$A[2][4],$A[2][4],$D[2],   $C[0]
+
+	bcax	$A[1][2],$D[0],   $A[1][4],$A[0][4]	// A[0][4]=A[1][3]
+	bcax	$A[1][3],$A[0][4],$A[1][0],$A[1][4]	// A[0][4]=A[1][3]
+	bcax	$A[1][4],$A[1][4],$A[1][1],$A[1][0]
+	bcax	$A[1][0],$A[1][0],$D[0],   $A[1][1]
+	bcax	$A[1][1],$A[1][1],$A[0][4],$D[0]	// A[0][4]=A[1][3]
+
+	bcax	$A[0][3],$D[3],   $A[0][0],$D[4]
+	bcax	$A[0][4],$D[4],   $A[0][1],$A[0][0]
+	bcax	$A[0][0],$A[0][0],$A[0][2],$A[0][1]
+	bcax	$A[0][1],$A[0][1],$D[3],   $A[0][2]
+	bcax	$A[0][2],$A[0][2],$D[4],   $D[3]
+
+	eor	$A[0][0],$A[0][0],$C[1]
+
+	subs	x9,x9,#1
+	bne	.Loop_neon
+
+	ret
+.size	KeccakF1600_neon,.-KeccakF1600_neon	
+___
+{
+my ($ctx,$inp,$len,$bsz) = map("x$_",(0..3));
+
+$code.=<<___;
+.globl	SHA3_Absorb_neon
+.type	SHA3_Absorb_neon,%function
+.align	5
+SHA3_Absorb_neon:
+.SHA3_Absorb_armv8_neon:
+	AARCH64_SIGN_LINK_REGISTER
+	stp	x29,x30,[sp,#-80]!
+	add	x29,sp,#0
+	stp	d8,d9,[sp,#16]		// per ABI requirement
+	stp	d10,d11,[sp,#32]
+	stp	d12,d13,[sp,#48]
+	stp	d14,d15,[sp,#64]
+___
+for($i=0; $i<12*16; $i+=16) {		# load A[5][5]
+my $j=$i+1;
+$code.=<<___;
+	LD1	{v0.16b},[x0], #0x$i
+___
+}
+$code.=<<___;
+	ldr	d24,[x0,#8*$i]
+	b	.Loop_absorb_neon
+
+.align	4
+.Loop_absorb_neon:
+	subs	$len,$len,$bsz		// len - bsz
+	blo	.Labsorbed_neon
+___
+for (my $i=0; $i<24; $i+=2) {
+my $j = $i+1;
+$code.=<<___;
+	ldr	d31,[$inp],#8		// *inp++
+#ifdef	__AARCH64EB__
+	rev64	v31.16b,v31.16b
+#endif
+	eor	$A[$i/5][$i%5],$A[$i/5][$i%5],v31.16b
+	cmp	$bsz,#8*($i+2)
+	blo	.Lprocess_block_neon
+	ldr	d31,[$inp],#8		// *inp++
+#ifdef	__AARCH64EB__
+	rev64	v31.16b,v31.16b
+#endif
+	eor	$A[$j/5][$j%5],$A[$j/5][$j%5],v31.16b
+	beq	.Lprocess_block_neon
+___
+}
+$code.=<<___;
+	ldr	d31,[$inp],#8		// *inp++
+#ifdef	__AARCH64EB__
+	rev64	v31.16b,v31.16b
+#endif
+	eor	$A[4][4],$A[4][4],v31.16b
+
+.Lprocess_block_neon:
+
+	bl	KeccakF1600_neon
+
+	b	.Loop_absorb_neon
+
+.align	4
+.Labsorbed_neon:
+___
+for($i=0; $i<12; $i+=1) {		# store A[5][5]
+my $j=$i+1;
+$code.=<<___;
+	st1	{v$i.16b},[x0]
+___
+}
+$code.=<<___;
+	str	d24,[x0,#8*$i]
+	add	x0,$len,$bsz		// return value
+
+	ldp	d8,d9,[sp,#16]
+	ldp	d10,d11,[sp,#32]
+	ldp	d12,d13,[sp,#48]
+	ldp	d14,d15,[sp,#64]
+	ldp	x29,x30,[sp],#80
+	AARCH64_VALIDATE_LINK_REGISTER
+	ret
+.size	SHA3_Absorb_neon,.-SHA3_Absorb_neon
+___
+}
+{
+my ($ctx,$out,$len,$bsz) = map("x$_",(0..3));
+$code.=<<___;
+.globl	SHA3_Squeeze_neon
+.type	SHA3_Squeeze_neon,%function
+.align	5
+SHA3_Squeeze_neon:
+.SHA3_Squeeze_armv8_neon:
+	AARCH64_SIGN_LINK_REGISTER
+	stp	x29,x30,[sp,#-16]!
+	add	x29,sp,#0
+	mov	x9,$ctx
+	mov	x10,$bsz
+
+.Loop_squeeze_neon:
+	ldr	x4,[x9],#8
+	cmp	$len,#8
+	blo	.Lsqueeze_tail_neon
+#ifdef	__AARCH64EB__
+	rev	x4,x4
+#endif
+	str	x4,[$out],#8
+	beq	.Lsqueeze_done_neon
+
+	sub	$len,$len,#8
+	subs	x10,x10,#8
+	bhi	.Loop_squeeze_neon
+
+	bl	KeccakF1600_neon
+	ldr	x30,[sp,#8]
+	mov	x9,$ctx
+	mov	x10,$bsz
+	b	.Loop_squeeze_neon
+
+.align	4
+.Lsqueeze_tail_neon:
+	strb	w4,[$out],#1
+	lsr	x4,x4,#8
+	subs	$len,$len,#1
+	beq	.Lsqueeze_done_neon
+	strb	w4,[$out],#1
+	lsr	x4,x4,#8
+	subs	$len,$len,#1
+	beq	.Lsqueeze_done_neon
+	strb	w4,[$out],#1
+	lsr	x4,x4,#8
+	subs	$len,$len,#1
+	beq	.Lsqueeze_done_neon
+	strb	w4,[$out],#1
+	lsr	x4,x4,#8
+	subs	$len,$len,#1
+	beq	.Lsqueeze_done_neon
+	strb	w4,[$out],#1
+	lsr	x4,x4,#8
+	subs	$len,$len,#1
+	beq	.Lsqueeze_done_neon
+	strb	w4,[$out],#1
+	lsr	x4,x4,#8
+	subs	$len,$len,#1
+	beq	.Lsqueeze_done_neon
+	strb	w4,[$out],#1
+
+ .Lsqueeze_done_neon:
+ 	ldr	x29,[sp],#16
+ 	AARCH64_VALIDATE_LINK_REGISTER
+ 	ret
+ .size	SHA3_Squeeze_neon,.-SHA3_Squeeze_neon
+___
+}								
+}}}
+
+
+
 $code.=<<___;
 .asciz	"Keccak-1600 absorb and squeeze for ARMv8, CRYPTOGAMS by <appro\@openssl.org>"
 ___
