@@ -57,8 +57,20 @@ class SHA3TestVector {
     OPENSSL_free(ctx);
   }
 
+<<<<<<< HEAD
+<<<<<<< HEAD
   void NISTTestVectors_SingleShot(const EVP_MD *algorithm, uint8_t *digest) const {
     uint32_t digest_length;
+=======
+  void NISTTestVectors_SingleShot() const {
+    uint32_t digest_length = SHA3_256_DIGEST_LENGTH;
+    const EVP_MD* algorithm = EVP_sha3_256();
+    uint8_t digest[SHA3_256_DIGEST_LENGTH];
+>>>>>>> 8b06ac629 (Import SHA3 reference implementation from OpenSSL && add EVP structs/functs with TestVector and speed bm (#515))
+=======
+  void NISTTestVectors_SingleShot(const EVP_MD *algorithm, uint8_t *digest) const {
+    uint32_t digest_length;
+>>>>>>> fa925c96d (reset --soft)
     EVP_MD_CTX* ctx = EVP_MD_CTX_new();
     
     #if !defined(OPENSSL_ANDROID)
@@ -132,6 +144,10 @@ TEST(SHA3Test, NISTTestVectors) {
   FileTestGTest("crypto/fipsmodule/sha/SHA3_256ShortMsg.txt", [](FileTest *t) {
     SHA3TestVector test_vec;
     EXPECT_TRUE(test_vec.ReadFromFileTest(t));
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> fa925c96d (reset --soft)
     uint8_t digest[SHA3_256_DIGEST_LENGTH];
     const EVP_MD* algorithm = EVP_sha3_256();
     test_vec.NISTTestVectors(algorithm, digest);
@@ -142,6 +158,12 @@ TEST(SHA3Test, NISTTestVectors) {
     uint8_t digest[SHA3_512_DIGEST_LENGTH];
     const EVP_MD* algorithm = EVP_sha3_512();
     test_vec.NISTTestVectors(algorithm, digest);
+<<<<<<< HEAD
+=======
+    test_vec.NISTTestVectors();
+>>>>>>> 8b06ac629 (Import SHA3 reference implementation from OpenSSL && add EVP structs/functs with TestVector and speed bm (#515))
+=======
+>>>>>>> fa925c96d (reset --soft)
   });
 }
 
@@ -149,6 +171,10 @@ TEST(SHA3Test, NISTTestVectors_SingleShot) {
   FileTestGTest("crypto/fipsmodule/sha/SHA3_256ShortMsg.txt", [](FileTest *t) {
     SHA3TestVector test_vec;
     EXPECT_TRUE(test_vec.ReadFromFileTest(t));
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> fa925c96d (reset --soft)
     uint8_t digest[SHA3_256_DIGEST_LENGTH];
     const EVP_MD* algorithm = EVP_sha3_256();
     test_vec.NISTTestVectors_SingleShot(algorithm, digest);
@@ -159,5 +185,11 @@ TEST(SHA3Test, NISTTestVectors_SingleShot) {
     uint8_t digest[SHA3_512_DIGEST_LENGTH];
     const EVP_MD* algorithm = EVP_sha3_512();
     test_vec.NISTTestVectors_SingleShot(algorithm, digest);
+<<<<<<< HEAD
+=======
+    test_vec.NISTTestVectors_SingleShot();
+>>>>>>> 8b06ac629 (Import SHA3 reference implementation from OpenSSL && add EVP structs/functs with TestVector and speed bm (#515))
+=======
+>>>>>>> fa925c96d (reset --soft)
   });
 }
